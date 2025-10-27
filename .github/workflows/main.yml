@@ -1,0 +1,19 @@
+name: CI Test
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Run test script
+        run: |
+          echo "CI работает!"
+          python --version || echo "Python не найден"
