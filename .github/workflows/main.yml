@@ -24,7 +24,7 @@ jobs:
           pip install pytest  # или pip install -r requirements.txt
 
       - name: Run tests
-        run: pytest tests/ -v  # -v для подробного вывода
+        run: pytest -v  # -v для подробного вывода
         # Если тесты в корне: pytest -v
 
       - name: Notify Slack
