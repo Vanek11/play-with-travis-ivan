@@ -13,16 +13,34 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Run test script
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
         run: |
-          echo "CI работает!"
-          python --version || echo "Python не найден"
+          python -m pip install --upgrade pip
+          pip install pytest  # или pip install -r requirements.txt
+
+      - name: Run tests
+        run: pytest tests/ -v  # -v для подробного вывода
+        # Если тесты в корне: pytest -v
 
       - name: Notify Slack
-        if: always()
+        if: failure()  # Только при ошибке
         uses: rtCamp/action-slack-notify@v2
         env:
           SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_URL }}
           SLACK_USERNAME: "GitHub Actions"
-          SLACK_TITLE: "CI Test build"
-          SLACK_MESSAGE: "Билд завершён со статусом: ${{ job.status }}"
+          SLACK_TITLE: "CI Test FAILED"
+          SLACK_MESSAGE: "Тесты провалились! Проверьте лог."
+
+      - name: Notify Slack (Success)
+        if: success()  # Только при успехе
+        uses: rtCamp/action-slack-notify@v2
+        env:
+          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_URL }}
+          SLACK_USERNAME: "GitHub Actions"
+          SLACK_TITLE: "CI Test PASSED"
+          SLACK_MESSAGE: "Все тесты пройдены успешно."
